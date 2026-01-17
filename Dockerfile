@@ -1,23 +1,30 @@
-# Use official Python image
+# Use a slimmer Python image
 FROM python:3.10-slim
 
-# Install system dependencies for your multimedia packages
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsndfile1 \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy all files to the container
-COPY . /app
+# Copy requirements first (better for Docker caching)
+COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port Streamlit runs on
+# Copy the rest of the application
+COPY . .
+
+# Expose port for Streamlit
 EXPOSE 8501
 
-# Run the Streamlit app
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Health check
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+
+# Run the app
+ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
