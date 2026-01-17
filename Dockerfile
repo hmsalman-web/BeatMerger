@@ -1,10 +1,12 @@
 # Use a slimmer Python image
 FROM python:3.10-slim
 
-# Install system dependencies
+# Install system dependencies including tkinter libraries
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsndfile1 \
+    tk \
+    python3-tk \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
