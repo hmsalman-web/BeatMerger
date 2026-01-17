@@ -1,0 +1,7 @@
+streamlit
+moviepy==1.0.3
+scipy
+pydub
+pyttsx3
+numpy
+edge-tts
